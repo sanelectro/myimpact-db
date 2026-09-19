@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: myimpact-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-myimpact}
+      POSTGRES_USER: ${POSTGRES_USER:-myimpact}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-myimpact}
+    ports:
+      - "${POSTGRES_PORT:-5556}:5432"
+    volumes:
+      - myimpact_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-myimpact} -d ${POSTGRES_DB:-myimpact}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  flyway:
+    image: flyway/flyway:13.7.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/flyway/sql:ro
+    command:
+      - -locations=filesystem:/flyway/sql
+      - -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-myimpact}
+      - -user=${POSTGRES_USER:-myimpact}
+      - -password=${POSTGRES_PASSWORD:-myimpact}
+      - migrate
+
+volumes:
+  myimpact_postgres_data:

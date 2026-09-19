@@ -1,0 +1,41 @@
+name: MyImpact DB Migrations
+
+on:
+  push:
+    paths:
+      - "migrations/**"
+      - "scripts/db/**"
+      - ".github/workflows/database-migrations.yml"
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Migration info
+        env:
+          FLYWAY_URL: ${{ secrets.FLYWAY_URL }}
+          FLYWAY_USER: ${{ secrets.FLYWAY_USER }}
+          FLYWAY_PASSWORD: ${{ secrets.FLYWAY_PASSWORD }}
+        run: |
+          docker run --rm             -v "$PWD/migrations:/flyway/sql:ro"             flyway/flyway:13.7.0             -locations=filesystem:/flyway/sql             -url="$FLYWAY_URL"             -user="$FLYWAY_USER"             -password="$FLYWAY_PASSWORD"             info
+
+      - name: Apply migrations
+        env:
+          FLYWAY_URL: ${{ secrets.FLYWAY_URL }}
+          FLYWAY_USER: ${{ secrets.FLYWAY_USER }}
+          FLYWAY_PASSWORD: ${{ secrets.FLYWAY_PASSWORD }}
+        run: |
+          docker run --rm             -v "$PWD/migrations:/flyway/sql:ro"             flyway/flyway:13.7.0             -locations=filesystem:/flyway/sql             -url="$FLYWAY_URL"             -user="$FLYWAY_USER"             -password="$FLYWAY_PASSWORD"             migrate
+
+      - name: Validate migration state
+        env:
+          FLYWAY_URL: ${{ secrets.FLYWAY_URL }}
+          FLYWAY_USER: ${{ secrets.FLYWAY_USER }}
+          FLYWAY_PASSWORD: ${{ secrets.FLYWAY_PASSWORD }}
+        run: |
+          docker run --rm             -v "$PWD/migrations:/flyway/sql:ro"             flyway/flyway:13.7.0             -locations=filesystem:/flyway/sql             -url="$FLYWAY_URL"             -user="$FLYWAY_USER"             -password="$FLYWAY_PASSWORD"             validate
