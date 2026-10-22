@@ -5,6 +5,7 @@
 --   user-1      -> rich dataset used for M6.2 dashboard validation
 --   user-2      -> partial dataset used for incomplete-state testing
 --   user-empty  -> intentionally empty dataset used for empty-state testing
+--   user-3      -> JL-4 persona with no goals, knowledge, or evidence
 --
 -- The seeded goals are modeled as goals imported from Workday.
 -- Evidence is modeled as a mixture of realistic source types with measurable outcomes.
@@ -19,7 +20,8 @@ INSERT INTO users (id, name, email, role, created_at, updated_at)
 VALUES
     ('user-1', 'Alex Johnson', 'user-1@myimpact.local', 'Lead Software Engineer', '2026-01-05T09:00:00+05:30', '2026-10-01T09:00:00+05:30'),
     ('user-2', 'Priya Sharma', 'user-2@myimpact.local', 'Software Engineer', '2026-01-05T09:00:00+05:30', '2026-10-01T09:00:00+05:30'),
-    ('user-empty', 'Empty State User', 'user-empty@myimpact.local', 'Software Engineer', '2026-01-05T09:00:00+05:30', '2026-10-01T09:00:00+05:30')
+    ('user-empty', 'Empty State User', 'user-empty@myimpact.local', 'Software Engineer', '2026-01-05T09:00:00+05:30', '2026-10-01T09:00:00+05:30'),
+    ('user-3', 'Test User 3', 'user-3@myimpact.local', 'JL-4', '2026-01-05T09:00:00+05:30', '2026-10-01T09:00:00+05:30')
 ON CONFLICT (id) DO UPDATE
 SET
     name = EXCLUDED.name,
@@ -32,7 +34,7 @@ SET
 -- -----------------------------------------------------------------------------
 
 INSERT INTO goals (
-    id, user_id, title, description, scope, start_date, end_date, status, source, created_at, updated_at
+    id, user_id, title, description, scope, start_date, end_date, status, sub_status, source, created_at, updated_at
 )
 VALUES
     (
@@ -44,6 +46,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-05T09:00:00+05:30',
         '2026-09-30T18:00:00+05:30'
@@ -57,6 +60,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-05T09:05:00+05:30',
         '2026-09-30T18:00:00+05:30'
@@ -70,6 +74,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-05T09:10:00+05:30',
         '2026-09-30T18:00:00+05:30'
@@ -84,6 +89,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-05T09:12:00+05:30',
         '2026-09-30T18:00:00+05:30'
@@ -97,6 +103,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-05T09:15:00+05:30',
         '2026-09-30T18:00:00+05:30'
@@ -110,6 +117,7 @@ SET
     start_date = EXCLUDED.start_date,
     end_date = EXCLUDED.end_date,
     status = EXCLUDED.status,
+    sub_status = EXCLUDED.sub_status,
     source = EXCLUDED.source,
     updated_at = EXCLUDED.updated_at;
 
@@ -118,7 +126,7 @@ SET
 -- -----------------------------------------------------------------------------
 
 INSERT INTO goals (
-    id, user_id, title, description, start_date, end_date, status, source, created_at, updated_at
+    id, user_id, title, description, start_date, end_date, status, sub_status, source, created_at, updated_at
 )
 VALUES
     (
@@ -129,6 +137,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-06T09:00:00+05:30',
         '2026-09-20T18:00:00+05:30'
@@ -141,6 +150,7 @@ VALUES
         '2026-01-01',
         '2026-12-31',
         'ACTIVE',
+        'ON_TRACK',
         'workday-import-demo',
         '2026-01-06T09:05:00+05:30',
         '2026-09-20T18:00:00+05:30'
@@ -153,6 +163,7 @@ SET
     start_date = EXCLUDED.start_date,
     end_date = EXCLUDED.end_date,
     status = EXCLUDED.status,
+    sub_status = EXCLUDED.sub_status,
     source = EXCLUDED.source,
     updated_at = EXCLUDED.updated_at;
 
