@@ -2,10 +2,11 @@
 -- Safe to run repeatedly.
 --
 -- Dataset:
---   user-1      -> rich dataset used for M6.2 dashboard validation
---   user-2      -> partial dataset used for incomplete-state testing
---   user-empty  -> intentionally empty dataset used for empty-state testing
---   user-3      -> JL-4 persona with no goals, knowledge, or evidence
+--   user-1      -> rich M6.2 dashboard data and Lead Software Engineer persona
+--   user-2      -> partial dashboard data and Software Engineer persona
+--   user-empty -> intentionally empty fixture for empty-state testing
+--   user-3      -> upgraded to Trainee Software Engineer by seed_demo_data.sh
+--   user-4..9   -> additional role personas created by seed_demo_data.sh
 --
 -- The seeded goals are modeled as goals imported from Workday.
 -- Evidence is modeled as a mixture of realistic source types with measurable outcomes.
@@ -589,21 +590,22 @@ SET
 
 COMMIT;
 
--- Expected rich dataset for user-1:
+-- Expected baseline SQL dataset for user-1 (seed_demo_data.sh adds 3 evidence rows):
 --   5 active goals
 --   goal-user1-not-started -> 0 achievements / 0 evidence / 0 impact
 --   goal-user1-quality -> 2 achievements / 2 evidence / 2 impact
 --   goal-user1-architecture -> 3 achievements / 3 evidence / 3 impact
 --   goal-user1-leadership -> 3 achievements / 3 evidence / 3 impact
 --   goal-user1-reliability -> 4+ achievements / 4+ evidence / 4+ impact
---   12 evidence records
---   12 evidence mappings
---   12 impact assessments
+--   12 evidence records before wrapper seed; 15 after seed_demo_data.sh
+--   12 evidence mappings before wrapper seed; 15 after seed_demo_data.sh
+--   12 impact assessments before wrapper seed; 15 after seed_demo_data.sh
 --
--- Expected partial dataset for user-2:
+-- Expected user-2 dataset after seed_demo_data.sh:
 --   2 active goals
---   2 evidence records
---   2 evidence mappings
---   1 impact assessment
+--   5 evidence records
+--   5 evidence mappings
+--   4 impact assessments
 --
 -- user-empty intentionally has no goals, evidence or impact data.
+-- Users 3-9 each receive one focus goal, 3 evidence records and 3 impact assessments.

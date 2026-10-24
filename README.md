@@ -116,3 +116,26 @@ docker compose run --rm flyway
 ```
 
 `down -v` deletes the local PostgreSQL data volume.
+
+## Local demo dataset
+
+After migrations, seed the role-based demo accounts, goals, source evidence,
+impact assessments, and PDF evidence assets:
+
+```bash
+export DEMO_USER_PASSWORD='choose-a-local-password-at-least-12-chars'
+./scripts/demo/seed_demo_data.sh
+```
+
+Each employee persona receives personal, team, and organization goals: one
+active, one approved, and one draft goal. The active focus goal has related
+GitHub, Jira, and written evidence; organization goals are associated with the
+shared demo organization.
+
+The nine employee accounts and `myimpact-admin@example.com` all use that
+password. The admin account has MyImpact-wide platform access and is not
+associated with a customer company. The script requires the authentication
+service virtual environment at `myimpact-api/.venv`; override it with
+`MYIMPACT_AUTH_PYTHON` if needed. It refuses to seed a remote database unless
+`ALLOW_REMOTE_DEMO_SEED=true` is explicitly set. The PDFs are served by the UI
+from `myimpact-web/public/demo-evidence/`.
