@@ -1,0 +1,2 @@
+ALTER TABLE milestones
+ADD COLUMN source VARCHAR(20) NOT NULL DEFAULT 'manual';

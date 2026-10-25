@@ -132,10 +132,31 @@ active, one approved, and one draft goal. The active focus goal has related
 GitHub, Jira, and written evidence; organization goals are associated with the
 shared demo organization.
 
-The nine employee accounts and `myimpact-admin@example.com` all use that
-password. The admin account has MyImpact-wide platform access and is not
-associated with a customer company. The script requires the authentication
-service virtual environment at `myimpact-api/.venv`; override it with
-`MYIMPACT_AUTH_PYTHON` if needed. It refuses to seed a remote database unless
-`ALLOW_REMOTE_DEMO_SEED=true` is explicitly set. The PDFs are served by the UI
-from `myimpact-web/public/demo-evidence/`.
+The nine employee accounts, `northstar-manager@myimpact.local`, and
+`myimpact-admin@example.com` all use that password. The admin account has
+MyImpact-wide platform access and is not associated with a customer company.
+The script also seeds seven documented role profiles for both
+`MyImpact Demo Engineering` and `Northstar Product Labs`. Sign in as
+`user-em@example.com` or `northstar-manager@myimpact.local` and open Company
+Roles to compare the company-scoped catalogues. The seeded role summaries
+identify their company; re-running the demo seed refreshes these seeded roles.
+The script requires the authentication service virtual environment at
+`myimpact-api/.venv`; override it with `MYIMPACT_AUTH_PYTHON` if needed. It
+refuses to seed a remote database unless `ALLOW_REMOTE_DEMO_SEED=true` is
+explicitly set. The PDFs are served by the UI from
+`myimpact-web/public/demo-evidence/`.
+
+To optionally seed starter goals from the supplied role expectations, run this
+after the demo accounts and migrations are present:
+
+```bash
+docker exec -i myimpact-postgres psql -v ON_ERROR_STOP=1 -U myimpact -d myimpact < scripts/demo/seed_role_goals.sql
+```
+
+The seed creates draft personal goals only for users whose role matches one of
+the documented roles (case-insensitively). Existing goals with the same title
+are left unchanged. Review and tailor the drafts before approval. The role
+summaries and suggested goals are in
+[`myimpact-ai/demo-data/role-expectations/`](../myimpact-ai/demo-data/role-expectations/).
+The wider spreadsheet role catalogue and competency matrices are documented
+there as well; competency levels are not automatically seeded as goals.

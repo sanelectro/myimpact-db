@@ -40,8 +40,13 @@ docker exec -i "${CONTAINER_NAME}"   psql -v ON_ERROR_STOP=1   -U "${DB_USER}"  
   DEMO_USER_PASSWORD="${DEMO_USER_PASSWORD}" "${AUTH_PYTHON}" "${SCRIPT_DIR}/seed_demo_accounts.py"
 )
 
+docker exec -i "${CONTAINER_NAME}" \
+  psql -v ON_ERROR_STOP=1 \
+  -U "${DB_USER}" \
+  -d "${DB_NAME}" < "${SCRIPT_DIR}/seed_company_role_catalog.sql"
+
 echo
 echo "Demo data seeded successfully."
-echo "  Ten demo accounts (nine employees and one MyImpact admin) share DEMO_USER_PASSWORD."
+echo "  Eleven demo accounts share DEMO_USER_PASSWORD, including role-catalog managers for both companies."
 echo "  See myimpact-ai/demo-data/demo_personas.json for the employee account list."
 echo "  MyImpact platform admin: myimpact-admin@example.com"

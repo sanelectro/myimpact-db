@@ -27,10 +27,21 @@ DEMO_ORGANIZATION = {
     "name": "MyImpact Demo Engineering",
     "normalized_name": "myimpact-demo-engineering",
 }
+ROLE_CATALOG_ORGANIZATION = {
+    "id": "organization-role-catalog-northstar",
+    "name": "Northstar Product Labs",
+    "normalized_name": "northstar-product-labs",
+}
 DEMO_ADMIN = {
     "user_id": "demo-myimpact-admin",
     "name": "MyImpact Admin",
     "email": "myimpact-admin@example.com",
+}
+ROLE_CATALOG_MANAGER = {
+    "user_id": "demo-northstar-manager",
+    "name": "Taylor Northstar",
+    "email": "northstar-manager@myimpact.local",
+    "role": "Engineering Manager",
 }
 
 
@@ -188,6 +199,18 @@ def seed_demo_data(password: str, personas: list[dict]) -> None:
             ),
             {
                 **DEMO_ORGANIZATION,
+                "created_at": now,
+            },
+        ).scalar_one()
+        role_catalog_organization_id = session.execute(
+            text(
+                """INSERT INTO organizations (id, name, normalized_name, created_at)
+                VALUES (:id, :name, :normalized_name, :created_at)
+                ON CONFLICT (normalized_name) DO UPDATE SET name = EXCLUDED.name
+                RETURNING id"""
+            ),
+            {
+                **ROLE_CATALOG_ORGANIZATION,
                 "created_at": now,
             },
         ).scalar_one()
@@ -372,6 +395,30 @@ def seed_demo_data(password: str, personas: list[dict]) -> None:
         session.execute(
             text(
                 """INSERT INTO users (
+                    id, name, email, role, organization_id, is_platform_admin, is_active,
+                    password_hash, created_at, updated_at
+                ) VALUES (
+                    :id, :name, :email, :role, :organization_id, FALSE, TRUE,
+                    :password_hash, :created_at, :updated_at
+                )
+                ON CONFLICT (id) DO UPDATE SET
+                    name = EXCLUDED.name, email = EXCLUDED.email, role = EXCLUDED.role,
+                    organization_id = EXCLUDED.organization_id,
+                    is_platform_admin = FALSE, is_active = TRUE,
+                    password_hash = EXCLUDED.password_hash, updated_at = EXCLUDED.updated_at"""
+            ),
+            {
+                **ROLE_CATALOG_MANAGER,
+                "organization_id": role_catalog_organization_id,
+                "password_hash": hash_password(password),
+                "created_at": now,
+                "updated_at": now,
+            },
+        )
+
+        session.execute(
+            text(
+                """INSERT INTO users (
                     id, name, email, role, is_platform_admin, is_active,
                     password_hash, created_at, updated_at
                 ) VALUES (
@@ -441,7 +488,8 @@ def main() -> None:
     goal_count = sum(len(_goal_rows(persona)) for persona in personas)
     evidence_count = sum(len(_evidence_rows(persona)) for persona in personas)
     print(
-        f"Seeded {len(personas)} employee demo accounts and one platform-admin account, "
+        f"Seeded {len(personas)} employee demo accounts, one role-catalog manager, "
+        "and one platform-admin account, "
         f"with {goal_count} goals, {evidence_count} evidence records, and impact assessments."
     )
     print("Use DEMO_USER_PASSWORD to sign in to any demo account.")
