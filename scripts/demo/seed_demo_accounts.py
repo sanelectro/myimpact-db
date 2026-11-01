@@ -38,7 +38,7 @@ DEMO_ADMIN = {
     "email": "myimpact-admin@example.com",
 }
 ROLE_CATALOG_MANAGER = {
-    "user_id": "demo-northstar-manager",
+    "id": "demo-northstar-manager",
     "name": "Taylor Northstar",
     "email": "northstar-manager@myimpact.local",
     "role": "Engineering Manager",
