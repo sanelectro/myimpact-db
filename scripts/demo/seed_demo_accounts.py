@@ -37,6 +37,18 @@ DEMO_ADMIN = {
     "name": "MyImpact Admin",
     "email": "myimpact-admin@example.com",
 }
+REVIEWER_ACCOUNTS = (
+    {
+        "id": "demo-reviewer-1",
+        "name": "M6.6 Reviewer One",
+        "email": "reviewer-1@myimpact.example.com",
+    },
+    {
+        "id": "demo-reviewer-2",
+        "name": "M6.6 Reviewer Two",
+        "email": "reviewer-2@myimpact.example.com",
+    },
+)
 ROLE_CATALOG_MANAGER = {
     "id": "demo-northstar-manager",
     "name": "Taylor Northstar",
@@ -419,15 +431,15 @@ def seed_demo_data(password: str, personas: list[dict]) -> None:
         session.execute(
             text(
                 """INSERT INTO users (
-                    id, name, email, role, is_platform_admin, is_active,
+                    id, name, email, role, is_platform_admin, is_reviewer, is_active,
                     password_hash, created_at, updated_at
                 ) VALUES (
-                    :id, :name, :email, NULL, TRUE, TRUE,
+                    :id, :name, :email, NULL, TRUE, FALSE, TRUE,
                     :password_hash, :created_at, :updated_at
                 )
                 ON CONFLICT (id) DO UPDATE SET
                     name = EXCLUDED.name, email = EXCLUDED.email, role = NULL,
-                    is_platform_admin = TRUE, is_active = TRUE,
+                    is_platform_admin = TRUE, is_reviewer = FALSE, is_active = TRUE,
                     password_hash = EXCLUDED.password_hash,
                     updated_at = EXCLUDED.updated_at"""
             ),
@@ -440,6 +452,29 @@ def seed_demo_data(password: str, personas: list[dict]) -> None:
                 "updated_at": now,
             },
         )
+        for reviewer in REVIEWER_ACCOUNTS:
+            session.execute(
+                text(
+                    """INSERT INTO users (
+                        id, name, email, role, is_platform_admin, is_reviewer, is_active,
+                        password_hash, created_at, updated_at
+                    ) VALUES (
+                        :id, :name, :email, NULL, FALSE, TRUE, TRUE,
+                        :password_hash, :created_at, :updated_at
+                    )
+                    ON CONFLICT (id) DO UPDATE SET
+                        name = EXCLUDED.name, email = EXCLUDED.email, role = NULL,
+                        is_platform_admin = FALSE, is_reviewer = TRUE, is_active = TRUE,
+                        password_hash = EXCLUDED.password_hash,
+                        updated_at = EXCLUDED.updated_at"""
+                ),
+                {
+                    **reviewer,
+                    "password_hash": hash_password(password),
+                    "created_at": now,
+                    "updated_at": now,
+                },
+            )
         session.commit()
 
 
