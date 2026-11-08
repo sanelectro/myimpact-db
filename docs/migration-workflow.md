@@ -77,3 +77,31 @@ from GitHub repository/environment secrets.
 Do not put `BEGIN` or `COMMIT` in migration files; Flyway manages the transaction boundary.
 
 Do not edit a migration after it has been applied. Create another timestamped versioned migration.
+
+## Goal hierarchy writer protocol
+
+The hierarchy migration adds optional goal levels and parents, a relationship
+revision, and append-only relationship events. Existing goals retain a null
+level and parent. A parent must belong to the same owner; deleting a parent
+with children is restricted.
+
+Every transaction that changes a parent must use READ COMMITTED isolation,
+acquire `pg_advisory_xact_lock(1296650324, 1)` in a separate statement before
+reading hierarchy state, and set the transaction-local
+`myimpact.relationship_actor` to the owner's user ID. An optional
+`myimpact.relationship_reason` may also be set transaction-locally. The writer
+must then compare the expected relationship revision and update only if it
+matches. The database checks the lock, actor, ownership, and cycle constraints,
+increments the revision, and records the event in the same transaction. A
+same-parent update does not increment the revision or create an event.
+
+The lock must precede the statement that reads or updates the hierarchy: taking
+it inside an update does not guarantee a fresh READ COMMITTED snapshot.
+Relationship changes do not create goal-definition versions. These schema
+facilities do not themselves expose a hierarchy API.
+
+Run `tests/goal_hierarchy.sql` only against a disposable migrated PostgreSQL
+database. The concurrency test requires a container labelled
+`myimpact.test=hierarchy-disposable`, with the test database and user named
+`hierarchytest`; set `HIERARCHY_TEST_CONTAINER` to that container and run
+`python -m unittest discover -s tests -p test_goal_hierarchy_concurrency.py -v`.
