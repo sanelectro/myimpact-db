@@ -1,11 +1,6 @@
 name: MyImpact DB Migrations
 
 on:
-  push:
-    paths:
-      - "migrations/**"
-      - "scripts/db/**"
-      - ".github/workflows/database-migrations.yml"
   workflow_dispatch:
 
 jobs:

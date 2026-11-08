@@ -78,7 +78,12 @@ Edit the generated SQL, validate it, run it, then commit it.
 
 ## CI/CD
 
-`.github/workflows/database-migrations.yml` runs Flyway when `migrations/**` changes.
+Migrations are run manually against the local development database using the
+commands above. Pushes do not trigger database migrations.
+
+`.github/workflows/database-migrations.yml` can still be started manually from
+GitHub Actions. It runs Flyway info, migrate, and validate against the database
+configured by the following GitHub secrets:
 
 Required GitHub secrets:
 
@@ -88,7 +93,9 @@ FLYWAY_USER
 FLYWAY_PASSWORD
 ```
 
-The same migration repository is promoted through environments; only the target connection values change.
+Verify that target before manually starting the workflow: it applies migrations.
+A GitHub-hosted runner cannot automatically access the PostgreSQL container on
+your computer.
 
 ## Migration rules
 

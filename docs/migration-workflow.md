@@ -52,14 +52,17 @@ Check status:
 
 ## CI/CD
 
-A push changing `migrations/**` triggers GitHub Actions.
+Pushes do not trigger GitHub Actions migrations. For now, run migrations
+manually against the local development database using the commands above.
 
-The workflow runs:
+The GitHub workflow remains available through manual dispatch and runs:
 
 ```text
-Flyway validate
+Flyway info
     ↓
 Flyway migrate
+    ↓
+Flyway validate
 ```
 
 using:
@@ -71,6 +74,10 @@ FLYWAY_PASSWORD
 ```
 
 from GitHub repository/environment secrets.
+
+Manual dispatch applies migrations to the configured target; verify the target
+before starting it. A GitHub-hosted runner does not automatically have access
+to the PostgreSQL container on your computer.
 
 ## Important
 
