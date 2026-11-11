@@ -112,3 +112,24 @@ database. The concurrency test requires a container labelled
 `myimpact.test=hierarchy-disposable`, with the test database and user named
 `hierarchytest`; set `HIERARCHY_TEST_CONTAINER` to that container and run
 `python -m unittest discover -s tests -p test_goal_hierarchy_concurrency.py -v`.
+
+## Goal operative-version foundation
+
+The operative-version migration adds a nullable pointer constrained to a
+version of the same Goal. It does not choose a version for existing Goals or
+change the behavior of existing readers and writers. The pointer alone does
+not implement publication, protect the live projection, or prevent history
+deletion.
+
+The subsequent definition-kind migration classifies existing snapshots as
+`STANDARD` and permits immutable `PROPOSAL` snapshots. Legacy latest-version
+readers exclude `PROPOSAL` snapshots. No proposal creation or publication
+workflow is enabled by these migrations. Before publication is enabled,
+readers and writers must be changed to honor the selected operative version,
+including when it is a proposal, and evidence safeguards must be enforced.
+
+Run `tests/goal_operative_version.sql` and
+`tests/goal_definition_version_kind.sql` only against a disposable database named
+`hierarchytest`, after creating its synthetic `phase1-upgrade-goal` and
+`phase1-upgrade-version` fixture on the previous migration baseline and then
+applying the foundation migrations. The SQL tests roll their own changes back.
