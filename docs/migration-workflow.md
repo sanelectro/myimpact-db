@@ -140,6 +140,12 @@ explicitly unknown historical effectivity. It does not choose or backfill any
 Goal version, assert historical approval, or change existing Goal projections.
 Observations may still be removed by existing cascading Goal/user deletion.
 
+The observed-baseline version migration permits `OBSERVED` snapshots and
+records their same-Goal `STANDARD` source version. Existing observations and
+Goals are unchanged. Existing latest-standard reads continue to exclude
+observed snapshots. An observation records current content, not historical
+approval or a proven past effective period; it does not enable publication.
+
 Run `tests/goal_operative_version.sql` and
 `tests/goal_definition_version_kind.sql` only against a disposable database named
 `hierarchytest`, after creating its synthetic `phase1-upgrade-goal` and
