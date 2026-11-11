@@ -135,6 +135,11 @@ support only the internal definition-preparation command. Existing Goal
 deletion behavior is unchanged; these tables do not by themselves guarantee
 permanent history retention.
 
+The baseline-observation migration adds a same-Goal observation record with
+explicitly unknown historical effectivity. It does not choose or backfill any
+Goal version, assert historical approval, or change existing Goal projections.
+Observations may still be removed by existing cascading Goal/user deletion.
+
 Run `tests/goal_operative_version.sql` and
 `tests/goal_definition_version_kind.sql` only against a disposable database named
 `hierarchytest`, after creating its synthetic `phase1-upgrade-goal` and
