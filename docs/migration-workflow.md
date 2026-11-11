@@ -128,6 +128,13 @@ workflow is enabled by these migrations. Before publication is enabled,
 readers and writers must be changed to honor the selected operative version,
 including when it is a proposal, and evidence safeguards must be enforced.
 
+The proposal-head and command-receipt migration adds same-Goal references,
+proposal-kind validation, and immutable completed retry receipts. It does not
+select baselines, create proposals, or enable publication. Receipts currently
+support only the internal definition-preparation command. Existing Goal
+deletion behavior is unchanged; these tables do not by themselves guarantee
+permanent history retention.
+
 Run `tests/goal_operative_version.sql` and
 `tests/goal_definition_version_kind.sql` only against a disposable database named
 `hierarchytest`, after creating its synthetic `phase1-upgrade-goal` and
